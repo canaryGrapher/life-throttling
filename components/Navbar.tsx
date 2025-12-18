@@ -13,7 +13,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ 
-  selectedCountryId = travelData[0].id,
+  selectedCountryId,
   isScrolled: externalIsScrolled,
   showOnMap = false 
 }) => {
@@ -21,7 +21,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isScrolled, setIsScrolled] = useState(externalIsScrolled ?? false);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   
-  const currentCountry = travelData.find(c => c.id === selectedCountryId) || travelData[0];
+  // Derive country from the URL if not explicitly provided
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const routeCountryId = pathSegments[0] === 'country' ? pathSegments[1] : undefined;
+  const effectiveCountryId = selectedCountryId ?? routeCountryId ?? travelData[0].id;
+
+  const currentCountry =
+    travelData.find(c => c.id.toLowerCase() === effectiveCountryId.toLowerCase()) ||
+    travelData[0];
   
   // Handle scroll if not externally controlled
   useEffect(() => {
@@ -35,7 +42,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [externalIsScrolled]);
 
   // Determine if we should show white text (on hero sections)
-  const isHeroSection = pathname === '/' || pathname.startsWith('/states/');
+  const isHeroSection =
+    pathname.startsWith('/country/') || pathname.startsWith('/states/');
   const shouldUseWhiteText = !isScrolled && isHeroSection && !showOnMap;
 
   if (showOnMap) {
@@ -46,7 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${isScrolled ? 'bg-background/80 backdrop-blur-xl border-border/40 py-4' : 'bg-transparent border-transparent py-6'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center">
         <Link 
-          href="/"
+          href={`/country/${currentCountry.id}`}
           className={`font-serif text-2xl font-bold tracking-tight cursor-pointer flex items-center gap-1 ${shouldUseWhiteText ? 'text-white' : 'text-foreground'}`}
         >
           LifeThrottling<div className="w-2 h-2 rounded-full bg-primary mt-2"></div>
@@ -76,16 +84,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <div className="fixed inset-0 z-40" onClick={() => setIsCountryDropdownOpen(false)}></div>
                 <div className="absolute right-0 top-full mt-2 w-56 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ring-1 ring-black/5 z-50">
                   <div className="p-1">
-                    {travelData.map(c => (
-                      <Link
-                        key={c.id}
-                        href="/"
-                        onClick={() => setIsCountryDropdownOpen(false)}
-                        className={`block px-4 py-3 text-sm rounded-xl cursor-pointer transition-colors ${c.id === selectedCountryId ? 'bg-primary/10 text-primary font-semibold' : 'text-foreground hover:bg-muted'}`}
-                      >
-                        {c.name}
-                      </Link>
-                    ))}
+                    {travelData.map(c => {
+                      const isActive =
+                        c.id.toLowerCase() === currentCountry.id.toLowerCase();
+                      return (
+                        <Link
+                          key={c.id}
+                          href={`/country/${c.id}`}
+                          onClick={() => setIsCountryDropdownOpen(false)}
+                          className={`block px-4 py-3 text-sm rounded-xl cursor-pointer transition-colors ${
+                            isActive
+                              ? 'bg-primary/10 text-primary font-semibold'
+                              : 'text-foreground hover:bg-muted'
+                          }`}
+                        >
+                          {c.name}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </>

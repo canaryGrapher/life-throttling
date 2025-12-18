@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import Map, { Marker, Popup, ViewStateChangeEvent } from 'react-map-gl/maplibre';
 import { Place, Country } from '../types';
-import { ArrowLeft } from './Icons';
+import { ArrowLeft, X } from './Icons';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 interface MapViewProps {
@@ -66,6 +66,14 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
     }
   }, [selectedPlace, onPlaceClick]);
 
+  const handleMapClick = useCallback((e: any) => {
+    // Close popup when clicking anywhere on the map
+    // The popup content has stopPropagation, so clicks inside won't trigger this
+    if (selectedPlace) {
+      setSelectedPlace(null);
+    }
+  }, [selectedPlace]);
+
   // Using OpenFreeMap - completely free, no API keys required!
   // Learn more at: https://openfreemap.org
 
@@ -114,9 +122,30 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
         onMove={handleViewStateChange}
         onLoad={handleMapLoad}
         onError={handleMapError}
+        onClick={handleMapClick}
         style={{ width: '100%', height: '100%' }}
-        mapStyle="https://tiles.openfreemap.org/styles/positron"
-        attributionControl={true}
+        // Custom style using OpenFreeMap / OpenStreetMap tiles without political boundaries
+        mapStyle={{
+          version: 8,
+          sources: {
+            osm: {
+              type: 'raster',
+              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+              tileSize: 256,
+              // attribution: '',
+            },
+          },
+          layers: [
+            {
+              id: 'osm-base',
+              type: 'raster',
+              source: 'osm',
+              minzoom: 0,
+              maxzoom: 19,
+            },
+          ],
+        }}
+        // attributionControl={true}
         reuseMaps={true}
       >
         {/* Custom Attribution */}
@@ -131,8 +160,9 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
             longitude={place.lng}
             latitude={place.lat}
             anchor="center"
-            onClick={(e: { originalEvent: MouseEvent }) => {
-              e.originalEvent.stopPropagation();
+            onClick={(e: any) => {
+              e.originalEvent?.stopPropagation();
+              e.stopPropagation?.();
               handleMarkerClick(place);
             }}
           >
@@ -155,25 +185,42 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
             className="custom-popup"
           >
             <div
-              onClick={handlePopupClick}
-              className="min-w-[200px] font-sans cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
+              className="min-w-[200px] font-sans relative"
             >
-              <div className="relative h-[120px] w-full rounded-lg overflow-hidden mb-2">
-                <img
-                  src={selectedPlace.image}
-                  alt={selectedPlace.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-2 right-2 bg-white px-2 py-1 rounded text-[10px] font-bold text-black shadow-lg">
-                  CLICK TO VIEW
+              {/* Close Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePopupClose();
+                }}
+                className="absolute -top-2 -right-2 z-20 bg-white rounded-full p-1.5 shadow-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                aria-label="Close popup"
+              >
+                <X className="w-4 h-4 text-gray-700" />
+              </button>
+
+              <div
+                onClick={handlePopupClick}
+                className="cursor-pointer"
+              >
+                <div className="relative h-[120px] w-full rounded-lg overflow-hidden mb-2">
+                  <img
+                    src={selectedPlace.image}
+                    alt={selectedPlace.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-2 right-2 bg-white px-2 py-1 rounded text-[10px] font-bold text-black shadow-lg">
+                    CLICK TO VIEW
+                  </div>
                 </div>
-              </div>
-              <h3 className="font-bold text-foreground text-base leading-tight mb-1">
-                {selectedPlace.name}
-              </h3>
-              <div className="text-xs text-muted-foreground font-medium">
-                {selectedPlace.cityName}, {selectedPlace.stateName}
+                <h3 className="font-bold text-foreground text-base leading-tight mb-1">
+                  {selectedPlace.name}
+                </h3>
+                <div className="text-xs text-muted-foreground font-medium">
+                  {selectedPlace.cityName}, {selectedPlace.stateName}
+                </div>
               </div>
             </div>
           </Popup>
