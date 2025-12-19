@@ -100,10 +100,10 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
       )}
       
       {mapError && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-50/80 backdrop-blur-sm">
-          <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-md">
-            <h2 className="text-xl font-bold mb-2 text-red-600">Map Error</h2>
-            <p className="text-muted-foreground mb-4">{mapError}</p>
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-800/80 backdrop-blur-sm">
+          <div className="text-center bg-gray-700 p-6 rounded-lg shadow-lg max-w-md border border-gray-600">
+            <h2 className="text-xl font-bold mb-2 text-red-400">Map Error</h2>
+            <p className="text-gray-200 mb-4">{mapError}</p>
             <button
               onClick={() => {
                 setMapError(null);
@@ -124,7 +124,7 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
         onError={handleMapError}
         onClick={handleMapClick}
         style={{ width: '100%', height: '100%' }}
-        // Custom style using OpenFreeMap / OpenStreetMap tiles without political boundaries
+        renderWorldCopies={false}
         mapStyle={{
           version: 8,
           sources: {
@@ -132,7 +132,6 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
               type: 'raster',
               tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
               tileSize: 256,
-              // attribution: '',
             },
           },
           layers: [
@@ -141,17 +140,12 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
               type: 'raster',
               source: 'osm',
               minzoom: 0,
-              maxzoom: 19,
+              maxzoom: 15,
             },
           ],
         }}
-        // attributionControl={true}
         reuseMaps={true}
       >
-        {/* Custom Attribution */}
-        <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-xs text-gray-600 shadow-lg z-10">
-          <a href="https://openfreemap.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OpenStreetMap</a>
-        </div>
 
         {/* Markers */}
         {places.map((place) => (
@@ -186,7 +180,7 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="min-w-[200px] font-sans relative"
+              className="min-w-[200px] font-sans relative bg-gray-700 rounded-lg p-2 shadow-lg"
             >
               {/* Close Button */}
               <button
@@ -194,10 +188,10 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
                   e.stopPropagation();
                   handlePopupClose();
                 }}
-                className="absolute -top-2 -right-2 z-20 bg-white rounded-full p-1.5 shadow-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                className="absolute -top-2 -right-2 z-20 bg-gray-700 rounded-full p-1.5 shadow-lg hover:bg-gray-600 transition-colors border border-gray-500"
                 aria-label="Close popup"
               >
-                <X className="w-4 h-4 text-gray-700" />
+                <X className="w-4 h-4 text-gray-200" />
               </button>
 
               <div
@@ -211,14 +205,14 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-2 right-2 bg-white px-2 py-1 rounded text-[10px] font-bold text-black shadow-lg">
+                  <div className="absolute bottom-2 right-2 bg-gray-700/90 px-2 py-1 rounded text-[10px] font-bold text-gray-100 shadow-lg">
                     CLICK TO VIEW
                   </div>
                 </div>
-                <h3 className="font-bold text-foreground text-base leading-tight mb-1">
+                <h3 className="font-bold text-gray-100 text-base leading-tight mb-1">
                   {selectedPlace.name}
                 </h3>
-                <div className="text-xs text-muted-foreground font-medium">
+                <div className="text-xs text-gray-300 font-medium">
                   {selectedPlace.cityName}, {selectedPlace.stateName}
                 </div>
               </div>
@@ -228,18 +222,19 @@ export const MapView: React.FC<MapViewProps> = ({ data, onBack, onPlaceClick }) 
       </Map>
 
       {/* Overlay Header */}
-      <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-start pointer-events-none z-10">
+      <div className="absolute top-0 left-0 p-6 flex flex-col justify-between pointer-events-none z-10 h-full">
         <button
           onClick={onBack}
-          className="pointer-events-auto bg-white/90 backdrop-blur-md border border-gray-200 text-gray-900 px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white transition-colors shadow-lg font-medium"
+          className="pointer-events-auto bg-gray-700/90 backdrop-blur-md border border-gray-600 text-gray-100 px-4 py-2 rounded-full flex items-center gap-2 hover:bg-gray-600 transition-colors shadow-lg font-medium"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to List</span>
         </button>
 
-        <div className="bg-white/90 backdrop-blur-md border border-gray-200 text-gray-900 px-6 py-3 rounded-2xl shadow-lg max-w-xs text-right hidden md:block pointer-events-auto">
-          <h2 className="font-serif font-bold text-xl">Journey Map</h2>
-          <p className="text-xs text-gray-500 mt-1">
+        <div className="bg-gray-700/90 backdrop-blur-md border border-gray-600 text-gray-100 px-6 py-3 rounded-2xl shadow-lg max-w-xs hidden md:block pointer-events-auto">
+          <h2 className="font-serif font-bold text-xl">Exploration Map</h2>
+          <p className="text-xs text-gray-300 mt-1">
+            These are the places I have visited in my lifetime. 
             Click markers to preview. Click popup to read adventure logs.
           </p>
         </div>
