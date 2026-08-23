@@ -1,5 +1,5 @@
 import { Country } from '../../types';
-import { IndianState } from '../states';
+import { IndianStatesArray } from '../states';
 
 const India: Country = {
   id: "india",
@@ -7,12 +7,7 @@ const India: Country = {
   heroTag: "Incredible India",
   image: "https://picsum.photos/id/1033/1920/1080",
   description: "A curated collection of journeys across the diverse landscapes, cities, mountains, deserts, and coasts.",
-  states: [
-    IndianState.HimachalPradesh,
-    IndianState.Rajasthan,
-    IndianState.Kerala,
-    IndianState.Ladakh,
-  ]
+  states: IndianStatesArray
 };
 
 export default India

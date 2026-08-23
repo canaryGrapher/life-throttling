@@ -9,6 +9,14 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    // Add rule to handle .md files as raw text
+    config.module.rules.push({
+      test: /\.md$/,
+      type: 'asset/source',
+    });
+    return config;
+  },
 };
 
 module.exports = nextConfig;

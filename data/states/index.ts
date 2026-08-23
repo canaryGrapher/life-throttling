@@ -1,3 +1,3 @@
-import * as IndianState from "./india"
+import IndianStatesArray from "./india"
 
-export { IndianState }
+export { IndianStatesArray }

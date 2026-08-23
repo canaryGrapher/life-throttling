@@ -3,7 +3,6 @@ import * as CountriesData from "./countries"
 
 export const travelData: Country[] = [
   CountriesData.India,
-  CountriesData.Nepal,
 ];
 
 // Re-export types for convenience

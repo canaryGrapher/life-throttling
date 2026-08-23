@@ -1,6 +1,8 @@
-import Kerala from "./Kerala";
-import HimachalPradesh from "./HimachalPradesh";
-import Ladakh from "./Ladakh";
-import Rajasthan from "./Rajasthan";
+import HimachalPradesh from "./himachal-pradesh";
+import Kerala from "./kerala";
+import Rajasthan from "./rajasthan";
+import JammuAndKashmir from "./jammu-and-kashmir";
 
-export { Kerala, HimachalPradesh, Ladakh, Rajasthan };
+const indianStates = [HimachalPradesh, JammuAndKashmir, Kerala, Rajasthan];
+
+export default indianStates;

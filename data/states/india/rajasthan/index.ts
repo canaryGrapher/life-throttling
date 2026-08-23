@@ -1,4 +1,5 @@
-import { State } from '../../../types';
+import { State } from '../../../../types';
+import amerFortContent from './jaipur/amer-fort.md';
 
 const Rajasthan: State = {
   id: "rajasthan",
@@ -20,7 +21,7 @@ const Rajasthan: State = {
           tags: ["History", "Fort", "Architecture"],
           lat: 26.9855,
           lng: 75.8513,
-          content: "Riding through the dusty roads of Rajasthan, the sight of Amer Fort standing tall is breathtaking..."
+          content: amerFortContent
         }
       ]
     },
@@ -34,4 +35,5 @@ const Rajasthan: State = {
   ]
 };
 
-export default Rajasthan
+export default Rajasthan;
+

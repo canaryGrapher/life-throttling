@@ -1,4 +1,3 @@
-import India from "./india";
-import Nepal from "./nepal";
+import India from "./India";
 
-export { India, Nepal };
+export { India };

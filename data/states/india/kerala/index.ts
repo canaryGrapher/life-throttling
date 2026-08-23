@@ -1,4 +1,4 @@
-import { State } from '../../../types';
+import { State } from '../../../../types';
 
 const Kerala: State = {
   id: "kerala",
@@ -17,3 +17,4 @@ const Kerala: State = {
 };
 
 export default Kerala;
+
